@@ -14,6 +14,109 @@ mycursor = conn.cursor()
 mycursor.execute("CREATE TABLE IF NOT EXISTS Student (StudentId INTEGER PRIMARY KEY,FirstName TEXT,LastName TEXT,GPA REAL, Major TEXT, FacultyAdvisor TEXT, Address TEXT, City TEXT, State TEXT, ZipCode TEXT, MobilePhoneNumber TEXT, isDeleted INTEGER DEFAULT 0)")
 conn.commit()
 
+# function to validate GPA
+def validateGPA():
+    GPA = ""
+    while 5:
+        GPA = input("Enter GPA: ")
+        try:
+            GPA = float(GPA)
+        except:
+            print("Cannot convert " + GPA + " to float.")
+            print("Try again")
+            continue
+        if (GPA < 0):
+            print("GPA can't be negative")
+            print("Try again")
+            continue
+        else:
+            break
+    return GPA
+
+# function to validate FacultyAdvisor
+def validateFacultyAdvisor():
+    FacultyAdvisor = ""
+    facultynames = ["Rene", "FooBar", "BarFoo", "Ener", "German"]
+    while 5:
+        FacultyAdvisor = input("Enter FacultyAdvisor (Rene, FooBarr, BarFoo, Ener, or German): ")
+        if (FacultyAdvisor not in facultynames):
+            print("Please retry, only use Rene, FooBarr, BarFoo, Ener, or German")
+            continue
+        else:
+            break
+    return FacultyAdvisor
+
+# function to validate ZipCode
+def validateZipCode():
+    ZipCode = ""
+    while 5:
+        ZipCode = input("Enter ZipCode with 5 numbers: ")
+        try:
+            testZip = int(ZipCode)
+        except:
+            print("Cannot convert " + ZipCode + " to int.")
+            print("Try again")
+            continue
+        if ((len(ZipCode) != 5 )):
+            print("ZipCode must be exactly 5 numbers")
+            print("Try again")
+            continue
+        else:
+            break
+    return ZipCode
+
+def validateState():
+    State = ""
+    while 5:
+        State = input("Enter State: ")
+        state_names = {"Alaska", "Alabama", "Arkansas", "American Samoa", "Arizona", "California", "Colorado",
+                       "Connecticut", "District of Columbia", "Delaware", "Florida", "Georgia", "Guam", "Hawaii",
+                       "Iowa", "Idaho", "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Massachusetts",
+                       "Maryland", "Maine", "Michigan", "Minnesota", "Missouri", "Mississippi", "Montana",
+                       "North Carolina", "North Dakota", "Nebraska", "New Hampshire", "New Jersey", "New Mexico",
+                       "Nevada", "New York", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico",
+                       "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Virginia",
+                       "Virgin Islands", "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"}
+        if (State not in state_names):
+            print("Must be a valid state fully spelled out")
+            print("Try again")
+            continue
+        else:
+            break
+    return State
+
+def validateStudentID(deleteorupdate):
+    StudentID = ""
+    while 5:
+        StudentID = input("Enter the StudentID for the student you would like to " + deleteorupdate + ": ")
+        try:
+            StudentID = int(StudentID)
+        except:
+            print("Cannot convert " + StudentID + " to integer.")
+            print("Try again")
+            continue
+        # check if StudentID exists
+        query = mycursor.execute("SELECT * FROM Student WHERE StudentID = ?", (StudentID,))
+        size = 0
+        for student in query:
+            size += 1
+        if size < 1:
+            print("StudentID " + str(StudentID) + " does not exist.")
+            print("Try a different StudentID")
+            continue
+        break
+    return StudentID
+
+# function to handle query results
+def handleQuery(query):
+    size = 0
+    for student in query:
+        size += 1
+        print(student)
+    if size < 1:
+        print("No students with this criteria exist.")
+        return
+
 # function to import data into the table
 def importDataIntoTable(filename):
     # get input file
@@ -46,75 +149,13 @@ def displayStudents():
 def addNewStudent():
     FirstName = input("Enter student FirstName: ")
     LastName = input("Enter student LastName: ")
-
-    # check that GPA is a number, that it's not negative
-    GPA = ""
-    while 5:
-        GPA = input("Enter GPA: ")
-        try:
-            GPA = float(GPA)
-        except:
-            print("Cannot convert " + GPA + " to float.")
-            print("Try again")
-            continue
-        if (GPA < 0):
-            print("GPA can't be negative")
-            print("Try again")
-            continue
-        else:
-            break
-
+    GPA = validateGPA()
     Major = input("Enter major: ")
-
-    # check that faculty is from existing list
-    FacultyAdvisor = ""
-    facultynames = ["Rene", "FooBar", "BarFoo", "Ener", "German"]
-    while 5:
-        FacultyAdvisor = input("Enter FacultyAdvisor (Rene, FooBarr, BarFoo, Ener, or German): ")
-        if (FacultyAdvisor not in facultynames):
-            print("Please retry, only use Rene, FooBarr, BarFoo, Ener, or German")
-            continue
-        else:
-            break
-
+    FacultyAdvisor = validateFacultyAdvisor()
     Address = input("Enter Address: ")
     City = input("Enter City: ")
-
-    # check that state is from existing list
-    State = ""
-    while 5:
-        State = input("Enter State: ")
-        state_names = {"Alaska", "Alabama", "Arkansas", "American Samoa", "Arizona", "California", "Colorado",
-                       "Connecticut", "District of Columbia", "Delaware", "Florida", "Georgia", "Guam", "Hawaii",
-                       "Iowa", "Idaho", "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Massachusetts",
-                       "Maryland", "Maine", "Michigan", "Minnesota", "Missouri", "Mississippi", "Montana",
-                       "North Carolina", "North Dakota", "Nebraska", "New Hampshire", "New Jersey", "New Mexico",
-                       "Nevada", "New York", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico",
-                       "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Virginia",
-                       "Virgin Islands", "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"}
-        if (State not in state_names):
-            print("Must be a valid state fully spelled out")
-            print("Try again")
-            continue
-        else:
-            break
-
-    # check that ZipCode is valid
-    ZipCode = ""
-    while 5:
-        ZipCode = input("Enter ZipCode with 5 numbers: ")
-        if ((len(ZipCode) != 5)):
-            print("ZipCode must be exactly 5 numbers")
-            print("Try again")
-            continue
-        try:
-            ZipCode = int(ZipCode)
-        except:
-            print("Cannot convert " + str(ZipCode) + " to int.")
-            print("Try again")
-            continue
-        break
-
+    State = validateState()
+    ZipCode = validateZipCode()
     MobilePhoneNumber = input("Enter MobilePhoneNumber: ")
 
     mycursor.execute("INSERT INTO Student('FirstName', 'LastName', 'GPA', 'Major', 'FacultyAdvisor', 'Address', 'City', 'State', 'ZipCode', 'MobilePhoneNumber') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (FirstName, LastName, GPA, Major, FacultyAdvisor, Address, City, State, ZipCode, MobilePhoneNumber,))
@@ -123,40 +164,9 @@ def addNewStudent():
 
 # function to update student
 def updateStudent():
-
-    StudentID = ""
-    # check if input is an integer
-    while 5:
-        StudentID = input("Enter the StudentID for the student you would like to update: ")
-        try:
-            StudentID = int(StudentID)
-        except:
-            print("Cannot convert " + StudentID + " to integer.")
-            print("Try again")
-            continue
-        # check if StudentID exists
-        query = mycursor.execute("SELECT * FROM Student WHERE StudentID = ?", (StudentID,))
-        size = 0
-        for student in query:
-            size += 1
-        if size < 1:
-            print("StudentID " + str(StudentID) + " does not exist.")
-            print("Try a different StudentID")
-            continue
-        break
-
+    StudentID = validateStudentID("update")
     Major = input("Enter major: ")
-
-    # check that faculty is in list
-    FacultyAdvisor = ""
-    facultynames = ["Rene", "FooBar", "BarFoo", "Ener", "German"]
-    while 5:
-        FacultyAdvisor = input("Enter FacultyAdvisor (Rene, FooBarr, BarFoo, Ener, or German): ")
-        if (FacultyAdvisor not in facultynames):
-            print("Please retry, only use Rene, FooBarr, BarFoo, Ener, or German")
-            continue
-        else:
-            break
+    FacultyAdvisor = validateFacultyAdvisor()
     MobilePhoneNumber = input("Enter MobilePhoneNumber: ")
 
     mycursor.execute("UPDATE Student SET Major = ?, FacultyAdvisor = ?, MobilePhoneNumber = ? WHERE StudentID = ?", (Major, FacultyAdvisor, MobilePhoneNumber, StudentID,))
@@ -164,26 +174,7 @@ def updateStudent():
     conn.commit()
 
 def deleteStudent():
-    StudentID = ""
-    # check if input is an integer
-    while 5:
-        StudentID = input("Enter the StudentID for the student you would like to delete: ")
-        try:
-            StudentID = int(StudentID)
-        except:
-            print("Cannot convert " + StudentID + " to integer.")
-            print("Try again")
-            continue
-        # check if StudentID exists
-        query = mycursor.execute("SELECT * FROM Student WHERE StudentID = ?", (StudentID,))
-        size = 0
-        for student in query:
-            size += 1
-        if size < 1:
-            print("StudentID " + str(StudentID) + " does not exist.")
-            print("Try a different StudentID")
-            continue
-        break
+    StudentID = validateStudentID("delete")
 
     mycursor.execute("UPDATE Student SET isDeleted = ? WHERE StudentID = ?",
                      (1, StudentID,))
@@ -215,81 +206,29 @@ def displayStudentsByAttributes():
         if (selection == 1):
             value = input("Enter the value for Major that you would like to search by: ")
             query = mycursor.execute("SELECT * FROM Student WHERE isDeleted = 0 AND Major = ?", (value,))
-            size = 0
-            for student in query:
-                size += 1
-                print(student)
-            if size < 1:
-                print("No students with this criteria exist.")
-                return
+            handleQuery(query)
         # GPA
         elif (selection == 2):
-            value = ""
-            while 5:
-                value = input("Enter the value for GPA that you would like to search by: ")
-                try:
-                    value = float(value)
-                except:
-                    print("Cannot convert " + value + " to float.")
-                    print("Try again")
-                    continue
-                if (value < 0):
-                    print("GPA can't be negative")
-                    print("Try again")
-                    continue
-                else:
-                    break
+            value = validateGPA()
             query = mycursor.execute("SELECT * FROM Student WHERE isDeleted = 0 AND GPA = ?", (value,))
-            size = 0
-            for student in query:
-                size += 1
-                print(student)
-            if size < 1:
-                print("No students with this criteria exist.")
-                return
+            handleQuery(query)
         # City
         elif (selection == 3):
             value = input("Enter the value for City that you would like to search by: ")
             query = mycursor.execute("SELECT * FROM Student WHERE isDeleted = 0 AND City = ?", (value,))
-            size = 0
-            for student in query:
-                size += 1
-                print(student)
-            if size < 1:
-                print("No students with this criteria exist.")
-                return
+            handleQuery(query)
         # State
         elif (selection == 4):
             value = input("Enter the value for State that you would like to search by: ")
             query = mycursor.execute("SELECT * FROM Student WHERE isDeleted = 0 AND State = ?", (value,))
-            size = 0
-            for student in query:
-                size += 1
-                print(student)
-            if size < 1:
-                print("No students with this criteria exist.")
-                return
+            handleQuery(query)
         # FacultyAdvisor
         elif (selection == 5):
-            value = ""
-            facultynames = ["Rene", "FooBar", "BarFoo", "Ener", "German"]
-            while 5:
-                value = input("Enter FacultyAdvisor (Rene, FooBarr, BarFoo, Ener, or German): ")
-                if (value not in facultynames):
-                    print("Please retry, only use Rene, FooBarr, BarFoo, Ener, or German")
-                    continue
-                else:
-                    break
+            value = validateFacultyAdvisor()
             query = mycursor.execute("SELECT * FROM Student WHERE isDeleted = 0 AND FacultyAdvisor = ?", (value,))
             if (value == "Null" or value == "None" or value == "null" or value == "none" or value == "<null>"):
                 query = mycursor.execute("SELECT * FROM Student WHERE isDeleted = 0 AND FacultyAdvisor IS NULL")
-            size = 0
-            for student in query:
-                size += 1
-                print(student)
-            if size < 1:
-                print("No students with this criteria exist.")
-                return
+            handleQuery(query)
         # invalid
         else:
             print("Invalid option.")
