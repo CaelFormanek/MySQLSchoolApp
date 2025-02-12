@@ -1,4 +1,4 @@
-1) All files being submitted:
+1) All files
 
 main.py, README.txt, StudentDB.db, students.csv
 
