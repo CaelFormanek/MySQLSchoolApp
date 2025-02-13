@@ -2,12 +2,11 @@
 
 main.py, README.txt, StudentDB.db, students.csv
 
-2) A description of any known compile or runtime errors, code limitations, or deviations
-from the assignment specification (if applicable)
+2) Any known compile/ runtime errors, or code limitations
 
 There are no known compile or runtime errors, code limitations, or deviations from the assignment specification
 
-3) A list of all references used to complete the assignment, including peers (if applicable)
+3) References
 
 https://stackoverflow.com/questions/4098008/create-table-in-sqlite-only-if-it-doesnt-exist-already
 https://stackoverflow.com/questions/17617610/set-default-value-of-an-integer-column-in-sqlite
